@@ -1,7 +1,15 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable react/no-access-state-in-setstate */
+/* eslint-disable no-param-reassign */
+/* eslint-disable prefer-template */
+/* eslint-disable react/prop-types */
+/* eslint-disable react/destructuring-assignment */
+/* eslint-disable import/newline-after-import */
+/* eslint-disable camelcase */
+/* eslint-disable react/no-multi-comp */
 import React, { Component } from 'react';
 import './todo.global.css';
-import { random } from 'node-forge';
-var faker = require('faker');
+const faker = require('faker');
 
 const btn_style = {
   marginLeft: '10px',
@@ -13,7 +21,7 @@ const input_style = {
   padding: '5px'
 };
 
-class TodoItem extends Component {
+class TodoItem extends React.PureComponent {
   constructor() {
     super();
 
@@ -29,6 +37,7 @@ class TodoItem extends Component {
       this.props.handleChangeCreater(this.props.item.id);
     };
   }
+
   render() {
     const itemClass =
       'isItemCompleted-' + (this.props.item.status ? 'done' : 'undone');
@@ -52,7 +61,7 @@ class TodoItem extends Component {
           <button
             style={{ float: 'right', marginTop: '-7px', marginRight: '5px' }}
             type="button"
-            className="btn btn-primary btn-md"
+            className="btn btn-info btn-md"
             onClick={this.onHandleChangeCreater}
           >
             Random Creater
@@ -81,7 +90,7 @@ class TodoList extends React.Component {
   }
 }
 
-class TodoApp extends Component {
+class TodoApp extends React.PureComponent {
   constructor() {
     super();
 
@@ -95,13 +104,11 @@ class TodoApp extends Component {
     this.handleAddItem = this.handleAddItem.bind(this);
     this.handleAddItemMutable = this.handleAddItemMutable.bind(this);
     this.handleMarkItemComplete = this.handleMarkItemComplete.bind(this);
-    this.handleDeleteItem = this.handleDeleteItem.bind(this);
+    // this.handleDeleteItem = this.handleDeleteItem.bind(this);
   }
 
   handleDeleteItem(itemId) {
-    const updatedItems = this.state.items.filter(item => {
-      return item.id !== itemId;
-    });
+    const updatedItems = this.state.items.filter(item => item.id !== itemId);
 
     this.setState({
       items: [].concat(updatedItems)
@@ -109,10 +116,14 @@ class TodoApp extends Component {
   }
 
   handleMarkItemComplete(itemId) {
-    const updatedItems = this.state.items.map(item => {
-      if (itemId === item.id) item.status = !item.status;
+    // const updatedItems = this.state.items.map(item => {
+    //   if (itemId === item.id) item.status = !item.status;
 
-      return item;
+    //   return item;
+    // });
+
+    const updatedItems = this.state.items.map(item => {
+      return itemId === item.id ? { ...item, status: !item.status } : item;
     });
 
     this.setState({
@@ -137,8 +148,11 @@ class TodoApp extends Component {
         }
       }
     };
-    // this.state.items.push(newItem);
-    this.state.items = this.state.items.concat(newItem);
+    const copyTodo = this.state.items;
+    copyTodo.push(newItem);
+    this.setState({
+      items: copyTodo
+    });
   }
 
   handleInput(event) {
@@ -175,28 +189,28 @@ class TodoApp extends Component {
     const selectedIndex = this.state.items.findIndex(
       todo => todo.id === todoId
     );
-    const oldItem = this.state.items;
-    oldItem[selectedIndex].creater.profile.name = faker.name.findName();
-    this.setState({
-      items: oldItem0
-    });
-
+    // const oldItem = this.state.items;
+    // oldItem[selectedIndex].creater.profile.name = faker.name.findName();
     // this.setState({
-    //   items: this.state.items.map((item, index) => {
-    //     return selectedIndex === index
-    //       ? {
-    //           ...item,
-    //           creater: {
-    //             ...item.creater,
-    //             profile: {
-    //               ...item.creater.profile,
-    //               name: faker.name.findName()
-    //             }
-    //           }
-    //         }
-    //       : item;
-    //   })
+    //   items: oldItem
     // });
+
+    this.setState({
+      items: this.state.items.map((item, index) => {
+        return selectedIndex === index
+          ? {
+              ...item,
+              creater: {
+                ...item.creater,
+                profile: {
+                  ...item.creater.profile,
+                  name: faker.name.findName()
+                }
+              }
+            }
+          : item;
+      })
+    });
   }
 
   render() {
@@ -216,7 +230,7 @@ class TodoApp extends Component {
               <button
                 style={btn_style}
                 type="button"
-                className="btn btn-primary btn-md"
+                className="btn btn-success btn-md"
                 onClick={this.handleAddItem}
               >
                 Add Immutable
